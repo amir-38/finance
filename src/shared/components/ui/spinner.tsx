@@ -1,0 +1,14 @@
+import { Loader2 } from "lucide-react"
+
+import { cn } from "@/shared/utils/index"
+
+function Spinner({ className }: { className?: string }) {
+  return (
+    <Loader2
+      data-slot="spinner"
+      className={cn("size-4 animate-spin text-muted-foreground", className)}
+    />
+  )
+}
+
+export { Spinner }
