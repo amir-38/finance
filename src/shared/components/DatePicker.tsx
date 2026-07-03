@@ -1,4 +1,5 @@
 import { CalendarIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/shared/components/ui/button';
 import { Calendar } from '@/shared/components/ui/calendar';
@@ -13,7 +14,9 @@ interface DatePickerProps {
   className?: string;
 }
 
-export function DatePicker({ value, onChange, placeholder = 'Выберите дату', disabled, className }: DatePickerProps) {
+export function DatePicker({ value, onChange, placeholder, disabled, className }: DatePickerProps) {
+  const { t } = useTranslation();
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -23,7 +26,7 @@ export function DatePicker({ value, onChange, placeholder = 'Выберите д
           className={cn('w-full justify-start gap-2 font-normal', !value && 'text-muted-foreground', className)}
         >
           <CalendarIcon className="size-4" />
-          {value ? formatDate(value, 'd MMMM yyyy') : placeholder}
+          {value ? formatDate(value, 'd MMMM yyyy') : (placeholder ?? t('common.selectDate'))}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">

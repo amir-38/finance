@@ -1,4 +1,5 @@
 import { isSupabaseConfigured, supabase } from '@/shared/services/supabase';
+import i18n from '@/shared/i18n/config';
 import { MOCK_BUDGETS } from '../model/mock';
 import type { Budget } from '../model/types';
 
@@ -84,7 +85,7 @@ export async function updateBudget(id: string, input: BudgetInput): Promise<Budg
     return updated;
   });
   persist();
-  if (!updated) throw new Error('Бюджет не найден');
+  if (!updated) throw new Error(i18n.t('common.notFound'));
   return updated;
 }
 

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { subMonths } from 'date-fns';
 import { Cell, Legend, Pie, PieChart, Tooltip } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 import { getCategoryById } from '@/entities/category';
 import { useTransactionsQuery, getCategoryTotals } from '@/entities/transaction';
@@ -9,6 +10,7 @@ import { ChartCard } from './ChartCard';
 import { ChartTooltipContent } from './ChartTooltipContent';
 
 export function IncomeSourcesPieChart() {
+  const { t, i18n } = useTranslation();
   const { data: transactions = [] } = useTransactionsQuery();
 
   const data = useMemo(() => {
@@ -18,10 +20,11 @@ export function IncomeSourcesPieChart() {
       const category = getCategoryById(item.categoryId);
       return { name: category.name, value: item.total, color: category.color };
     });
-  }, [transactions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transactions, i18n.language]);
 
   return (
-    <ChartCard title="Источники дохода" description="За последние 3 месяца">
+    <ChartCard title={t('analytics.incomeSourcesTitle')} description={t('analytics.last3Months')}>
       <PieChart>
         <Tooltip content={<ChartTooltipContent valueFormatter={formatCurrency} />} />
         <Legend wrapperStyle={{ fontSize: 12, color: 'var(--muted-foreground)' }} iconType="circle" iconSize={8} />

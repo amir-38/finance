@@ -1,19 +1,22 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 import { AuthCard, GoogleAuthButton, RegisterForm } from '@/features/auth';
 import { Separator } from '@/shared/components/ui/separator';
 import { ROUTES } from '@/shared/config/routes';
 
 export function RegisterPage() {
+  const { t } = useTranslation();
+
   return (
     <AuthCard
-      title="Регистрация"
-      description="Создайте аккаунт, чтобы начать вести бюджет"
+      title={t('auth.registerTitle')}
+      description={t('auth.registerDescription')}
       footer={
         <p className="text-center text-sm text-muted-foreground">
-          Уже есть аккаунт?{' '}
+          {t('auth.haveAccount')}{' '}
           <Link to={ROUTES.AUTH.LOGIN} className="font-medium text-primary hover:underline">
-            Войти
+            {t('auth.login')}
           </Link>
         </p>
       }
@@ -22,7 +25,7 @@ export function RegisterPage() {
       <div className="relative py-1">
         <Separator />
         <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
-          или
+          {t('common.or')}
         </span>
       </div>
       <GoogleAuthButton />

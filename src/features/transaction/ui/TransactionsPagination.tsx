@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import {
   Pagination,
   PaginationContent,
@@ -25,12 +27,14 @@ export function TransactionsPagination({
   onPageChange,
   onPageSizeChange,
 }: TransactionsPaginationProps) {
+  const { t } = useTranslation();
+
   if (total === 0) return null;
 
   return (
     <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
-        <span>Показывать по</span>
+        <span>{t('transactions.showPer')}</span>
         <Select value={String(pageSize)} onValueChange={(value) => onPageSizeChange(Number(value))}>
           <SelectTrigger className="w-20">
             <SelectValue />
@@ -44,7 +48,7 @@ export function TransactionsPagination({
           </SelectContent>
         </Select>
         <span>
-          · Всего {total} {total === 1 ? 'операция' : 'операций'}
+          {t('transactions.totalLabel')} {total} {total === 1 ? t('transactions.operationSingular') : t('transactions.operationPlural')}
         </span>
       </div>
 
@@ -61,12 +65,12 @@ export function TransactionsPagination({
               }}
               size="default"
             >
-              Назад
+              {t('transactions.back')}
             </PaginationLink>
           </PaginationItem>
           <PaginationItem>
             <span className="px-3 text-sm text-muted-foreground">
-              {page} из {pageCount}
+              {page} {t('common.of')} {pageCount}
             </span>
           </PaginationItem>
           <PaginationItem>
@@ -80,7 +84,7 @@ export function TransactionsPagination({
               }}
               size="default"
             >
-              Вперёд
+              {t('transactions.next')}
             </PaginationLink>
           </PaginationItem>
         </PaginationContent>

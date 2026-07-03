@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { History } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { getCategoryById } from '@/entities/category';
 import { useTransactionsQuery } from '@/entities/transaction';
@@ -9,6 +10,7 @@ import { EmptyState } from '@/shared/components/EmptyState';
 import { cn, formatRelativeDate, formatSignedCurrency } from '@/shared/utils/index';
 
 export function TransactionsTimeline() {
+  const { t } = useTranslation();
   const { data = [] } = useTransactionsQuery();
 
   const items = useMemo(
@@ -19,12 +21,12 @@ export function TransactionsTimeline() {
   return (
     <Card className="glass-card h-full border-0">
       <CardHeader>
-        <CardTitle>Хронология операций</CardTitle>
-        <CardDescription>Последние 12 операций</CardDescription>
+        <CardTitle>{t('analytics.timelineTitle')}</CardTitle>
+        <CardDescription>{t('analytics.timelineDescription')}</CardDescription>
       </CardHeader>
       <CardContent>
         {items.length === 0 ? (
-          <EmptyState icon={History} title="Пока нет операций" />
+          <EmptyState icon={History} title={t('dashboard.noTransactionsYet')} />
         ) : (
           <div className="relative space-y-5 pl-6">
             <div className="absolute top-1.5 bottom-1.5 left-[7px] w-px bg-border" />

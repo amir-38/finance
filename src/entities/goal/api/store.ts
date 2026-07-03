@@ -1,4 +1,5 @@
 import { isSupabaseConfigured, supabase } from '@/shared/services/supabase';
+import i18n from '@/shared/i18n/config';
 import { MOCK_GOALS } from '../model/mock';
 import type { Goal } from '../model/types';
 
@@ -107,7 +108,7 @@ export async function updateGoal(id: string, input: GoalInput): Promise<Goal> {
     return updated;
   });
   persist();
-  if (!updated) throw new Error('Цель не найдена');
+  if (!updated) throw new Error(i18n.t('common.notFound'));
   return updated;
 }
 

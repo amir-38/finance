@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
 import { Button } from '@/shared/components/ui/button';
@@ -27,10 +28,11 @@ function getInitials(name: string | null, email: string): string {
 
 export function ProfileForm() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
+    resolver: zodResolver(profileSchema()),
     defaultValues: { fullName: user?.fullName ?? '' },
   });
 
@@ -38,9 +40,9 @@ export function ProfileForm() {
     setLoading(true);
     try {
       await updateProfile({ fullName: values.fullName });
-      toast.success('Профиль обновлён');
+      toast.success(t('auth.profileUpdated'));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Не удалось сохранить изменения');
+      toast.error(error instanceof Error ? error.message : t('auth.profileUpdateFailed'));
     } finally {
       setLoading(false);
     }
@@ -51,12 +53,12 @@ export function ProfileForm() {
       <div className="flex items-center gap-4">
         <Avatar className="size-16 border border-border/60">
           <AvatarFallback className="bg-primary/10 text-lg font-semibold text-primary">
-            {getInitials(user?.fullName ?? null, user?.email ?? 'ГС')}
+            {getInitials(user?.fullName ?? null, user?.email ?? t('common.guest'))}
           </AvatarFallback>
         </Avatar>
         <div>
-          <p className="font-medium text-foreground">{user?.fullName ?? 'Без имени'}</p>
-          <p className="text-sm text-muted-foreground">{user?.email ?? 'Вход не выполнен'}</p>
+          <p className="font-medium text-foreground">{user?.fullName ?? t('common.noName')}</p>
+          <p className="text-sm text-muted-foreground">{user?.email ?? t('common.notSignedIn')}</p>
         </div>
       </div>
 
@@ -67,21 +69,21 @@ export function ProfileForm() {
             name="fullName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Имя</FormLabel>
+                <FormLabel>{t('auth.fullName')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Ваше имя" {...field} />
+                  <Input placeholder={t('auth.yourName')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
           <div className="space-y-2">
-            <Label>Email</Label>
+            <Label>{t('auth.email')}</Label>
             <Input value={user?.email ?? ''} disabled />
           </div>
           <Button type="submit" className="gap-2" disabled={loading}>
             {loading && <Loader2 className="size-4 animate-spin" />}
-            Сохранить изменения
+            {t('auth.saveChanges')}
           </Button>
         </form>
       </Form>

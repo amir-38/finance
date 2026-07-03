@@ -1,4 +1,5 @@
 import { isSupabaseConfigured, supabase } from '@/shared/services/supabase';
+import i18n from '@/shared/i18n/config';
 import { MOCK_TRANSACTIONS } from '../model/mock';
 import type { Transaction, TransactionType } from '../model/types';
 
@@ -120,7 +121,7 @@ export async function updateTransaction(id: string, input: TransactionInput): Pr
     return updated;
   });
   persist();
-  if (!updated) throw new Error('Операция не найдена');
+  if (!updated) throw new Error(i18n.t('common.notFound'));
   return updated;
 }
 

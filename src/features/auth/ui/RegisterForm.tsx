@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
@@ -15,10 +16,11 @@ import { registerSchema, type RegisterFormValues } from '../model/schemas';
 
 export function RegisterForm() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(registerSchema()),
     defaultValues: { fullName: '', email: '', password: '', confirmPassword: '' },
   });
 
@@ -27,14 +29,14 @@ export function RegisterForm() {
     try {
       const { hasSession } = await signUpWithPassword(values.email, values.password, values.fullName);
       if (hasSession) {
-        toast.success('Аккаунт создан!');
+        toast.success(t('auth.accountCreated'));
         navigate(ROUTES.HOME);
       } else {
-        toast.success('Мы отправили письмо для подтверждения аккаунта');
+        toast.success(t('auth.confirmationEmailSent'));
         navigate(ROUTES.AUTH.LOGIN);
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Не удалось создать аккаунт');
+      toast.error(error instanceof Error ? error.message : t('auth.registerFailed'));
     } finally {
       setLoading(false);
     }
@@ -48,9 +50,9 @@ export function RegisterForm() {
           name="fullName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Имя</FormLabel>
+              <FormLabel>{t('auth.fullName')}</FormLabel>
               <FormControl>
-                <Input placeholder="Амир Саруханов" autoComplete="name" {...field} />
+                <Input placeholder="Amir Saruxanov" autoComplete="name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -61,7 +63,7 @@ export function RegisterForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t('auth.email')}</FormLabel>
               <FormControl>
                 <Input type="email" placeholder="you@example.com" autoComplete="email" {...field} />
               </FormControl>
@@ -74,7 +76,7 @@ export function RegisterForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Пароль</FormLabel>
+              <FormLabel>{t('auth.password')}</FormLabel>
               <FormControl>
                 <PasswordInput autoComplete="new-password" {...field} />
               </FormControl>
@@ -87,7 +89,7 @@ export function RegisterForm() {
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Повторите пароль</FormLabel>
+              <FormLabel>{t('auth.confirmPassword')}</FormLabel>
               <FormControl>
                 <PasswordInput autoComplete="new-password" {...field} />
               </FormControl>
@@ -97,7 +99,7 @@ export function RegisterForm() {
         />
         <Button type="submit" className="w-full gap-2" disabled={loading}>
           {loading && <Loader2 className="size-4 animate-spin" />}
-          Создать аккаунт
+          {t('auth.createAccount')}
         </Button>
       </form>
     </Form>

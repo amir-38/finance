@@ -1,11 +1,10 @@
 import { isSupabaseConfigured, supabase } from '@/shared/services/supabase';
+import i18n from '@/shared/i18n/config';
 import type { AppUser } from '@/entities/user';
-
-const NOT_CONFIGURED_MESSAGE = 'Supabase не настроен. Добавьте ключи в .env и перезапустите приложение (Этап 9).';
 
 function assertConfigured() {
   if (!isSupabaseConfigured || !supabase) {
-    throw new Error(NOT_CONFIGURED_MESSAGE);
+    throw new Error(i18n.t('auth.notConfigured'));
   }
   return supabase;
 }

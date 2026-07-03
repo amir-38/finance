@@ -10,8 +10,15 @@ import {
   subMonths,
   subWeeks,
 } from 'date-fns';
-import { ru } from 'date-fns/locale';
+import { az, ru } from 'date-fns/locale';
+import i18n from '@/shared/i18n/config';
 import type { Transaction, TransactionType } from './types';
+
+const DATE_LOCALES = { az, ru };
+
+function getDateLocale() {
+  return DATE_LOCALES[i18n.language as keyof typeof DATE_LOCALES] ?? az;
+}
 
 export function filterByMonth(transactions: Transaction[], reference: Date): Transaction[] {
   return transactions.filter((tx) => isSameMonth(new Date(tx.date), reference));
@@ -86,7 +93,7 @@ export function getMonthlyBuckets(
 
     buckets.push({
       monthKey,
-      label: format(monthDate, 'LLL', { locale: ru }),
+      label: format(monthDate, 'LLL', { locale: getDateLocale() }),
       income,
       expense,
       net: income - expense,
@@ -118,7 +125,7 @@ export function getWeeklyExpenses(
 
     buckets.push({
       weekKey: format(weekStart, 'yyyy-MM-dd'),
-      label: format(weekStart, 'd MMM', { locale: ru }),
+      label: format(weekStart, 'd MMM', { locale: getDateLocale() }),
       total,
     });
   }
@@ -152,7 +159,7 @@ export function getBalanceHistory(
       0,
     );
     running += dayTotal;
-    points.push({ date: format(day, 'yyyy-MM-dd'), label: format(day, 'd MMM', { locale: ru }), balance: running });
+    points.push({ date: format(day, 'yyyy-MM-dd'), label: format(day, 'd MMM', { locale: getDateLocale() }), balance: running });
   }
 
   return points;

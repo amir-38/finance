@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   Select,
@@ -20,11 +21,13 @@ interface CategorySelectProps {
   extraItem?: ReactNode;
 }
 
-export function CategorySelect({ categories, value, onChange, placeholder = 'Выберите категорию', overallOption, extraItem }: CategorySelectProps) {
+export function CategorySelect({ categories, value, onChange, placeholder, overallOption, extraItem }: CategorySelectProps) {
+  const { t } = useTranslation();
+
   return (
     <Select value={value} onValueChange={onChange}>
       <SelectTrigger className="w-full">
-        <SelectValue placeholder={placeholder} />
+        <SelectValue placeholder={placeholder ?? t('common.selectCategory')} />
       </SelectTrigger>
       <SelectContent>
         {overallOption && (

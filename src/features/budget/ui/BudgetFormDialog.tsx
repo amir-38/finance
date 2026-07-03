@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import type { Budget } from '@/entities/budget';
 import { useCreateBudgetMutation, useUpdateBudgetMutation } from '@/entities/budget';
@@ -35,13 +36,14 @@ function toDefaultValues(budget?: Budget): BudgetFormValues {
 }
 
 export function BudgetFormDialog({ open, onOpenChange, budget, categories, existingCategoryIds }: BudgetFormDialogProps) {
+  const { t } = useTranslation();
   const isEdit = Boolean(budget);
   const createMutation = useCreateBudgetMutation();
   const updateMutation = useUpdateBudgetMutation();
   const loading = createMutation.isPending || updateMutation.isPending;
 
   const form = useForm<BudgetFormValues>({
-    resolver: zodResolver(budgetSchema),
+    resolver: zodResolver(budgetSchema()),
     defaultValues: toDefaultValues(budget),
   });
 
@@ -57,7 +59,7 @@ export function BudgetFormDialog({ open, onOpenChange, budget, categories, exist
     const categoryId = values.categoryId === OVERALL_BUDGET_VALUE ? null : values.categoryId;
 
     if (!isEdit && existingCategoryIds.includes(categoryId)) {
-      form.setError('categoryId', { message: 'Бюджет для этой категории уже создан' });
+      form.setError('categoryId', { message: t('budget.categoryAlreadyExists') });
       return;
     }
 
@@ -66,14 +68,14 @@ export function BudgetFormDialog({ open, onOpenChange, budget, categories, exist
     try {
       if (isEdit && budget) {
         await updateMutation.mutateAsync({ id: budget.id, input });
-        toast.success('Бюджет обновлён');
+        toast.success(t('budget.budgetUpdated'));
       } else {
         await createMutation.mutateAsync(input);
-        toast.success('Бюджет создан');
+        toast.success(t('budget.budgetCreated'));
       }
       onOpenChange(false);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Не удалось сохранить бюджет');
+      toast.error(error instanceof Error ? error.message : t('budget.budgetSaveFailed'));
     }
   }
 
@@ -81,9 +83,9 @@ export function BudgetFormDialog({ open, onOpenChange, budget, categories, exist
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{isEdit ? 'Редактировать бюджет' : 'Новый бюджет'}</DialogTitle>
+          <DialogTitle>{isEdit ? t('budget.editBudgetTitle') : t('budget.newBudgetTitle')}</DialogTitle>
           <DialogDescription>
-            {isEdit ? 'Измените месячный лимит' : 'Задайте лимит на месяц — общий или по категории'}
+            {isEdit ? t('budget.editLimitDescription') : t('budget.setLimitDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -94,13 +96,13 @@ export function BudgetFormDialog({ open, onOpenChange, budget, categories, exist
               name="categoryId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Категория</FormLabel>
+                  <FormLabel>{t('budget.category')}</FormLabel>
                   <FormControl>
                     <CategorySelect
                       categories={availableCategories}
                       value={field.value}
                       onChange={field.onChange}
-                      overallOption={{ value: OVERALL_BUDGET_VALUE, label: 'Общий бюджет (все категории)' }}
+                      overallOption={{ value: OVERALL_BUDGET_VALUE, label: t('budget.overallBudgetOption') }}
                     />
                   </FormControl>
                   <FormMessage />
@@ -113,7 +115,7 @@ export function BudgetFormDialog({ open, onOpenChange, budget, categories, exist
               name="limit"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Лимит на месяц, ₼</FormLabel>
+                  <FormLabel>{t('budget.limitPerMonth')}</FormLabel>
                   <FormControl>
                     <Input type="number" step="0.01" min="0" placeholder="0" {...field} />
                   </FormControl>
@@ -124,11 +126,11 @@ export function BudgetFormDialog({ open, onOpenChange, budget, categories, exist
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Отмена
+                {t('common.cancel')}
               </Button>
               <Button type="submit" disabled={loading} className="gap-2">
                 {loading && <Loader2 className="size-4 animate-spin" />}
-                {isEdit ? 'Сохранить' : 'Создать'}
+                {isEdit ? t('common.save') : t('common.create')}
               </Button>
             </DialogFooter>
           </form>

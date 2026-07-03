@@ -1,23 +1,27 @@
 import { format, formatDistanceToNowStrict } from 'date-fns';
-import { ru } from 'date-fns/locale';
+import { az, ru } from 'date-fns/locale';
+import i18n from '@/shared/i18n/config';
 
 const CURRENCY_SYMBOL = '₼';
 
-const numberFormatter = new Intl.NumberFormat('ru-RU', {
-  maximumFractionDigits: 0,
-});
+const DATE_LOCALES = { az, ru };
 
-const compactNumberFormatter = new Intl.NumberFormat('ru-RU', {
-  notation: 'compact',
-  maximumFractionDigits: 0,
-});
+function getDateLocale() {
+  return DATE_LOCALES[i18n.language as keyof typeof DATE_LOCALES] ?? az;
+}
+
+function getIntlLocale(): string {
+  return i18n.language === 'ru' ? 'ru-RU' : 'az-AZ';
+}
 
 export function formatCurrency(amount: number): string {
-  return `${numberFormatter.format(amount)} ${CURRENCY_SYMBOL}`;
+  const formatter = new Intl.NumberFormat(getIntlLocale(), { maximumFractionDigits: 0 });
+  return `${formatter.format(amount)} ${CURRENCY_SYMBOL}`;
 }
 
 export function formatCompactCurrency(amount: number): string {
-  return `${compactNumberFormatter.format(amount)} ${CURRENCY_SYMBOL}`;
+  const formatter = new Intl.NumberFormat(getIntlLocale(), { notation: 'compact', maximumFractionDigits: 0 });
+  return `${formatter.format(amount)} ${CURRENCY_SYMBOL}`;
 }
 
 export function formatSignedCurrency(amount: number, type: 'income' | 'expense'): string {
@@ -26,13 +30,13 @@ export function formatSignedCurrency(amount: number, type: 'income' | 'expense')
 }
 
 export function formatDate(date: string | Date, pattern = 'd MMMM'): string {
-  return format(typeof date === 'string' ? new Date(date) : date, pattern, { locale: ru });
+  return format(typeof date === 'string' ? new Date(date) : date, pattern, { locale: getDateLocale() });
 }
 
 export function formatRelativeDate(date: string | Date): string {
   return formatDistanceToNowStrict(typeof date === 'string' ? new Date(date) : date, {
     addSuffix: true,
-    locale: ru,
+    locale: getDateLocale(),
   });
 }
 

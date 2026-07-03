@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { PieChart } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { getCategoryById, CategoryIcon } from '@/entities/category';
 import { useTransactionsQuery, filterByMonth, getCategoryTotals } from '@/entities/transaction';
@@ -10,6 +11,7 @@ import { formatCurrency, formatPercent } from '@/shared/utils/index';
 
 export function TopCategories() {
   const { data: transactions = [] } = useTransactionsQuery();
+  const { t, i18n } = useTranslation();
 
   const items = useMemo(() => {
     const monthTransactions = filterByMonth(transactions, new Date());
@@ -21,16 +23,17 @@ export function TopCategories() {
       total: item.total,
       percent: (item.total / grandTotal) * 100,
     }));
-  }, [transactions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transactions, i18n.language]);
 
   return (
     <Card className="glass-card h-full border-0">
       <CardHeader>
-        <CardTitle>Топ категорий</CardTitle>
+        <CardTitle>{t('dashboard.topCategories')}</CardTitle>
       </CardHeader>
       <CardContent>
         {items.length === 0 ? (
-          <EmptyState icon={PieChart} title="Нет расходов за месяц" />
+          <EmptyState icon={PieChart} title={t('dashboard.noExpensesThisMonth')} />
         ) : (
           <div className="space-y-4">
             {items.map(({ category, total, percent }, index) => (
@@ -55,7 +58,7 @@ export function TopCategories() {
                     style={{ backgroundColor: category.color }}
                   />
                 </div>
-                <span className="text-xs text-muted-foreground">{formatPercent(percent)} от расходов</span>
+                <span className="text-xs text-muted-foreground">{formatPercent(percent)} {t('dashboard.ofExpenses')}</span>
               </div>
             ))}
           </div>

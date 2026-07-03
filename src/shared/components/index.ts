@@ -36,4 +36,5 @@ export { StatCard } from './StatCard';
 export { PageHeader } from './PageHeader';
 export { Logo } from './Logo';
 export { ThemeToggle } from './ThemeToggle';
+export { LanguageToggle } from './LanguageToggle';
 export { DatePicker } from './DatePicker';

@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
@@ -15,10 +16,11 @@ import { loginSchema, type LoginFormValues } from '../model/schemas';
 
 export function LoginForm() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(loginSchema()),
     defaultValues: { email: '', password: '' },
   });
 
@@ -26,10 +28,10 @@ export function LoginForm() {
     setLoading(true);
     try {
       await signInWithPassword(values.email, values.password);
-      toast.success('Добро пожаловать!');
+      toast.success(t('auth.welcomeBack'));
       navigate(ROUTES.HOME);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Не удалось войти');
+      toast.error(error instanceof Error ? error.message : t('auth.loginFailed'));
     } finally {
       setLoading(false);
     }
@@ -43,7 +45,7 @@ export function LoginForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t('auth.email')}</FormLabel>
               <FormControl>
                 <Input type="email" placeholder="you@example.com" autoComplete="email" {...field} />
               </FormControl>
@@ -57,9 +59,9 @@ export function LoginForm() {
           render={({ field }) => (
             <FormItem>
               <div className="flex items-center justify-between">
-                <FormLabel>Пароль</FormLabel>
+                <FormLabel>{t('auth.password')}</FormLabel>
                 <Link to={ROUTES.AUTH.RESET_PASSWORD} className="text-xs text-primary hover:underline">
-                  Забыли пароль?
+                  {t('auth.forgotPassword')}
                 </Link>
               </div>
               <FormControl>
@@ -71,7 +73,7 @@ export function LoginForm() {
         />
         <Button type="submit" className="w-full gap-2" disabled={loading}>
           {loading && <Loader2 className="size-4 animate-spin" />}
-          Войти
+          {t('auth.login')}
         </Button>
       </form>
     </Form>

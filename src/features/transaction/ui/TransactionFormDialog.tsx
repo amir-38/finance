@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowDownCircle, ArrowUpCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import type { Category } from '@/entities/category';
 import { useCreateTransactionMutation, useUpdateTransactionMutation, type Transaction } from '@/entities/transaction';
@@ -62,13 +63,14 @@ export function TransactionFormDialog({
   categories,
   onRequestAddCategory,
 }: TransactionFormDialogProps) {
+  const { t } = useTranslation();
   const isEdit = Boolean(transaction);
   const createMutation = useCreateTransactionMutation();
   const updateMutation = useUpdateTransactionMutation();
   const loading = createMutation.isPending || updateMutation.isPending;
 
   const form = useForm<TransactionFormValues>({
-    resolver: zodResolver(transactionSchema),
+    resolver: zodResolver(transactionSchema()),
     defaultValues: toDefaultValues(transaction),
   });
 
@@ -90,14 +92,14 @@ export function TransactionFormDialog({
     try {
       if (isEdit && transaction) {
         await updateMutation.mutateAsync({ id: transaction.id, input });
-        toast.success('Операция обновлена');
+        toast.success(t('transactions.transactionUpdated'));
       } else {
         await createMutation.mutateAsync(input);
-        toast.success('Операция добавлена');
+        toast.success(t('transactions.transactionCreated'));
       }
       onOpenChange(false);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Не удалось сохранить операцию');
+      toast.error(error instanceof Error ? error.message : t('transactions.transactionSaveFailed'));
     }
   }
 
@@ -105,9 +107,9 @@ export function TransactionFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{isEdit ? 'Редактировать операцию' : 'Новая операция'}</DialogTitle>
+          <DialogTitle>{isEdit ? t('transactions.editTransactionTitle') : t('transactions.newTransactionTitle')}</DialogTitle>
           <DialogDescription>
-            {isEdit ? 'Измените детали операции' : 'Добавьте доход или расход в историю операций'}
+            {isEdit ? t('transactions.editTransactionDescription') : t('transactions.newTransactionDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -118,7 +120,7 @@ export function TransactionFormDialog({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Тип</FormLabel>
+                  <FormLabel>{t('transactions.typeLabel')}</FormLabel>
                   <FormControl>
                     <ToggleGroup
                       type="single"
@@ -134,7 +136,7 @@ export function TransactionFormDialog({
                         )}
                       >
                         <ArrowDownCircle className="size-4" />
-                        Расход
+                        {t('transactions.expenseType')}
                       </ToggleGroupItem>
                       <ToggleGroupItem
                         value="income"
@@ -143,7 +145,7 @@ export function TransactionFormDialog({
                         )}
                       >
                         <ArrowUpCircle className="size-4" />
-                        Доход
+                        {t('transactions.incomeType')}
                       </ToggleGroupItem>
                     </ToggleGroup>
                   </FormControl>
@@ -157,9 +159,9 @@ export function TransactionFormDialog({
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Название</FormLabel>
+                  <FormLabel>{t('transactions.titleLabel')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Например, Продукты" {...field} />
+                    <Input placeholder={t('transactions.titlePlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -172,7 +174,7 @@ export function TransactionFormDialog({
                 name="amount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Сумма, ₼</FormLabel>
+                    <FormLabel>{t('transactions.amountLabel')}</FormLabel>
                     <FormControl>
                       <Input type="number" step="0.01" min="0" placeholder="0" {...field} />
                     </FormControl>
@@ -185,7 +187,7 @@ export function TransactionFormDialog({
                 name="date"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Дата</FormLabel>
+                    <FormLabel>{t('transactions.dateLabel')}</FormLabel>
                     <FormControl>
                       <DatePicker value={field.value} onChange={field.onChange} />
                     </FormControl>
@@ -200,7 +202,7 @@ export function TransactionFormDialog({
               name="categoryId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Категория</FormLabel>
+                  <FormLabel>{t('transactions.categoryLabel')}</FormLabel>
                   <FormControl>
                     <CategoryPicker
                       categories={categories}
@@ -219,9 +221,9 @@ export function TransactionFormDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Описание</FormLabel>
+                  <FormLabel>{t('transactions.descriptionLabel')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Короткое описание (необязательно)" {...field} />
+                    <Input placeholder={t('transactions.descriptionPlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -233,9 +235,9 @@ export function TransactionFormDialog({
               name="comment"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Комментарий</FormLabel>
+                  <FormLabel>{t('transactions.commentLabel')}</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Заметка (необязательно)" rows={2} {...field} />
+                    <Textarea placeholder={t('transactions.commentPlaceholder')} rows={2} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -244,11 +246,11 @@ export function TransactionFormDialog({
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Отмена
+                {t('common.cancel')}
               </Button>
               <Button type="submit" disabled={loading} className="gap-2">
                 {loading && <Loader2 className="size-4 animate-spin" />}
-                {isEdit ? 'Сохранить' : 'Добавить'}
+                {isEdit ? t('common.save') : t('common.add')}
               </Button>
             </DialogFooter>
           </form>

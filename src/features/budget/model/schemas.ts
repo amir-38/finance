@@ -1,9 +1,12 @@
 import { z } from 'zod';
+import i18n from '@/shared/i18n/config';
 
 export const OVERALL_BUDGET_VALUE = '__overall__';
 
-export const budgetSchema = z.object({
-  categoryId: z.string().min(1, 'Выберите категорию'),
-  limit: z.coerce.number({ invalid_type_error: 'Введите сумму' }).positive('Сумма должна быть больше нуля'),
-});
-export type BudgetFormValues = z.infer<typeof budgetSchema>;
+export function budgetSchema() {
+  return z.object({
+    categoryId: z.string().min(1, i18n.t('common.selectCategory')),
+    limit: z.coerce.number({ invalid_type_error: i18n.t('validation.enterAmount') }).positive(i18n.t('validation.amountPositive')),
+  });
+}
+export type BudgetFormValues = z.infer<ReturnType<typeof budgetSchema>>;

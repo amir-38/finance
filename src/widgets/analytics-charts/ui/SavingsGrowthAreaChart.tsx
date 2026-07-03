@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 import { useTransactionsQuery, getMonthlyBuckets } from '@/entities/transaction';
 import { formatCompactCurrency } from '@/shared/utils/index';
@@ -7,6 +8,7 @@ import { ChartCard } from './ChartCard';
 import { ChartTooltipContent } from './ChartTooltipContent';
 
 export function SavingsGrowthAreaChart() {
+  const { t, i18n } = useTranslation();
   const { data: transactions = [] } = useTransactionsQuery();
 
   const data = useMemo(() => {
@@ -16,10 +18,11 @@ export function SavingsGrowthAreaChart() {
       cumulative += bucket.net;
       return { label: bucket.label, savings: cumulative };
     });
-  }, [transactions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transactions, i18n.language]);
 
   return (
-    <ChartCard title="Рост сбережений" description="Накопленные сбережения по месяцам">
+    <ChartCard title={t('analytics.savingsGrowthTitle')} description={t('analytics.savingsGrowthDescription')}>
       <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id="savingsGradient" x1="0" y1="0" x2="0" y2="1">
@@ -40,7 +43,7 @@ export function SavingsGrowthAreaChart() {
         <Area
           type="monotone"
           dataKey="savings"
-          name="Сбережения"
+          name={t('analytics.savingsSeriesName')}
           stroke="var(--success)"
           strokeWidth={2.5}
           fill="url(#savingsGradient)"

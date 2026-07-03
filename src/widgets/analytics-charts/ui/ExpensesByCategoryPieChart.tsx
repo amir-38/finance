@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { subDays } from 'date-fns';
 import { Cell, Legend, Pie, PieChart, Tooltip } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 import { getCategoryById } from '@/entities/category';
 import { useTransactionsQuery, getCategoryTotals } from '@/entities/transaction';
@@ -11,6 +12,7 @@ import { ChartTooltipContent } from './ChartTooltipContent';
 const MAX_SLICES = 6;
 
 export function ExpensesByCategoryPieChart() {
+  const { t, i18n } = useTranslation();
   const { data: transactions = [] } = useTransactionsQuery();
 
   const data = useMemo(() => {
@@ -26,14 +28,15 @@ export function ExpensesByCategoryPieChart() {
     });
 
     if (restTotal > 0) {
-      items.push({ name: 'Остальное', value: restTotal, color: '#64748B' });
+      items.push({ name: t('analytics.otherCategory'), value: restTotal, color: '#64748B' });
     }
 
     return items;
-  }, [transactions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transactions, i18n.language]);
 
   return (
-    <ChartCard title="Расходы по категориям" description="За последние 30 дней">
+    <ChartCard title={t('analytics.expensesByCategoryTitle')} description={t('analytics.last30Days')}>
       <PieChart>
         <Tooltip content={<ChartTooltipContent valueFormatter={formatCurrency} />} />
         <Legend wrapperStyle={{ fontSize: 12, color: 'var(--muted-foreground)' }} iconType="circle" iconSize={8} />

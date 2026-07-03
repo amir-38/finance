@@ -1,4 +1,5 @@
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { useDeleteBudgetMutation } from '@/entities/budget';
 import { ConfirmDialog } from '@/shared/components/ConfirmDialog';
@@ -10,16 +11,17 @@ interface DeleteBudgetDialogProps {
 }
 
 export function DeleteBudgetDialog({ budget, onOpenChange }: DeleteBudgetDialogProps) {
+  const { t } = useTranslation();
   const deleteMutation = useDeleteBudgetMutation();
 
   async function handleConfirm() {
     if (!budget) return;
     try {
       await deleteMutation.mutateAsync(budget.id);
-      toast.success('Бюджет удалён');
+      toast.success(t('budget.budgetDeleted'));
       onOpenChange(false);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Не удалось удалить бюджет');
+      toast.error(error instanceof Error ? error.message : t('budget.budgetDeleteFailed'));
     }
   }
 
@@ -27,9 +29,9 @@ export function DeleteBudgetDialog({ budget, onOpenChange }: DeleteBudgetDialogP
     <ConfirmDialog
       open={Boolean(budget)}
       onOpenChange={onOpenChange}
-      title="Удалить бюджет?"
-      description={budget ? `Лимит «${budget.name}» будет удалён.` : undefined}
-      confirmLabel="Удалить"
+      title={t('budget.deleteBudgetTitle')}
+      description={budget ? t('budget.deleteBudgetDescription', { name: budget.name }) : undefined}
+      confirmLabel={t('common.delete')}
       variant="destructive"
       loading={deleteMutation.isPending}
       onConfirm={handleConfirm}

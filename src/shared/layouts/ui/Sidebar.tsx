@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom"
 import { ChevronsLeft, ChevronsRight } from "lucide-react"
 import { motion } from "framer-motion"
+import { useTranslation } from "react-i18next"
 
 import { Logo } from "@/shared/components/Logo"
 import { Button } from "@/shared/components/ui/button"
@@ -13,6 +14,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
+  const { t } = useTranslation()
+
   return (
     <motion.aside
       initial={false}
@@ -25,7 +28,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 px-3 py-2">
-        {NAV_ITEMS.map(({ label, href, icon: Icon }) => (
+        {NAV_ITEMS.map(({ labelKey, href, icon: Icon }) => (
           <NavLink
             key={href}
             to={href}
@@ -39,7 +42,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
             }
           >
             <Icon className="size-[18px] shrink-0" />
-            {!collapsed && <span className="truncate">{label}</span>}
+            {!collapsed && <span className="truncate">{t(labelKey)}</span>}
           </NavLink>
         ))}
       </nav>
@@ -52,7 +55,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           className={cn("w-full text-muted-foreground", !collapsed && "justify-start gap-2")}
         >
           {collapsed ? <ChevronsRight className="size-4" /> : <ChevronsLeft className="size-4" />}
-          {!collapsed && "Свернуть"}
+          {!collapsed && t('common.collapse')}
         </Button>
       </div>
     </motion.aside>

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import { PageHeader } from '@/shared/components/PageHeader';
 import { BalanceOverview } from '@/widgets/balance-overview';
 import { QuickActions } from '@/widgets/quick-actions';
@@ -10,9 +12,11 @@ import { FinancialGoals } from '@/widgets/financial-goals';
 import { FinancialScore } from '@/widgets/financial-score';
 
 export function DashboardPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6">
-      <PageHeader title="Дашборд" description="Обзор ваших финансов за текущий месяц" />
+      <PageHeader title={t('dashboard.title')} description={t('dashboard.description')} />
 
       <BalanceOverview />
 

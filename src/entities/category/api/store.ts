@@ -1,5 +1,6 @@
 import { isSupabaseConfigured, supabase } from '@/shared/services/supabase';
 import { DEFAULT_CATEGORIES } from '@/shared/config/categories';
+import i18n from '@/shared/i18n/config';
 import type { Category } from '../model/types';
 
 const STORAGE_KEY = 'financeflow:custom-categories';
@@ -50,7 +51,11 @@ export async function initCustomCategories(userId: string): Promise<void> {
 }
 
 export function getAllCategories(): Category[] {
-  return [...DEFAULT_CATEGORIES.map((category) => ({ ...category })), ...customCategories];
+  const defaults = DEFAULT_CATEGORIES.map((category) => ({
+    ...category,
+    name: i18n.t(`categories.${category.id}`),
+  }));
+  return [...defaults, ...customCategories];
 }
 
 export async function addCustomCategory(input: CategoryInput): Promise<Category> {

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { AlertTriangle, ArrowRight, Wallet } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { CategoryIcon } from '@/entities/category';
 import { Button } from '@/shared/components/ui/button';
@@ -17,16 +18,17 @@ const statusIndicatorClass = {
 };
 
 export function BudgetProgress() {
+  const { t } = useTranslation();
   const budgets = useBudgetUsage();
 
   return (
     <Card className="glass-card h-full border-0">
       <CardHeader>
-        <CardTitle>Прогресс бюджета</CardTitle>
+        <CardTitle>{t('dashboard.budgetProgress')}</CardTitle>
         <CardAction>
           <Button asChild variant="ghost" size="sm" className="gap-1 text-muted-foreground">
             <Link to={ROUTES.BUDGET}>
-              Все бюджеты
+              {t('dashboard.allBudgets')}
               <ArrowRight className="size-3.5" />
             </Link>
           </Button>
@@ -34,7 +36,7 @@ export function BudgetProgress() {
       </CardHeader>
       <CardContent>
         {budgets.length === 0 ? (
-          <EmptyState icon={Wallet} title="Бюджет не настроен" description="Создайте лимиты по категориям или на месяц" />
+          <EmptyState icon={Wallet} title={t('dashboard.budgetNotSet')} description={t('dashboard.createLimitsDescription')} />
         ) : (
           <div className="space-y-5">
             {budgets.map((budget) => (
@@ -51,7 +53,7 @@ export function BudgetProgress() {
                       )}
                     </div>
                     <span className="text-xs text-muted-foreground">
-                      {formatCurrency(budget.spent)} из {formatCurrency(budget.limit)}
+                      {formatCurrency(budget.spent)} {t('common.of')} {formatCurrency(budget.limit)}
                     </span>
                   </div>
                   <span

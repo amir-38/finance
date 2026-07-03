@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
@@ -11,11 +12,12 @@ import { resetPasswordForEmail } from '../api/auth';
 import { requestResetSchema, type RequestResetFormValues } from '../model/schemas';
 
 export function RequestResetForm() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
   const form = useForm<RequestResetFormValues>({
-    resolver: zodResolver(requestResetSchema),
+    resolver: zodResolver(requestResetSchema()),
     defaultValues: { email: '' },
   });
 
@@ -25,7 +27,7 @@ export function RequestResetForm() {
       await resetPasswordForEmail(values.email);
       setSent(true);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Не удалось отправить ссылку');
+      toast.error(error instanceof Error ? error.message : t('auth.resetLinkFailed'));
     } finally {
       setLoading(false);
     }
@@ -36,7 +38,7 @@ export function RequestResetForm() {
       <div className="flex flex-col items-center gap-3 rounded-xl border border-success/20 bg-success/10 px-4 py-6 text-center">
         <CheckCircle2 className="size-8 text-success" />
         <p className="text-sm text-foreground">
-          Мы отправили ссылку для восстановления пароля на <strong>{form.getValues('email')}</strong>
+          {t('auth.resetLinkSent')} <strong>{form.getValues('email')}</strong>
         </p>
       </div>
     );
@@ -50,7 +52,7 @@ export function RequestResetForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{t('auth.email')}</FormLabel>
               <FormControl>
                 <Input type="email" placeholder="you@example.com" autoComplete="email" {...field} />
               </FormControl>
@@ -60,7 +62,7 @@ export function RequestResetForm() {
         />
         <Button type="submit" className="w-full gap-2" disabled={loading}>
           {loading && <Loader2 className="size-4 animate-spin" />}
-          Отправить ссылку
+          {t('auth.sendLink')}
         </Button>
       </form>
     </Form>

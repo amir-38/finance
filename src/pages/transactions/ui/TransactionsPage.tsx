@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { AddCategoryDialog } from '@/features/category';
 import {
@@ -19,6 +20,7 @@ import { PageHeader } from '@/shared/components/PageHeader';
 import { Skeleton } from '@/shared/components/ui/skeleton';
 
 export function TransactionsPage() {
+  const { t } = useTranslation();
   const { data: transactions = [], isLoading, isError, refetch } = useTransactionsQuery();
   const { filters, setFilters, resetFilters, total, pageCount, pageItems } = useTransactionFilters(transactions);
 
@@ -41,12 +43,12 @@ export function TransactionsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Операции"
-        description="Все ваши доходы и расходы в одном месте"
+        title={t('transactions.pageTitle')}
+        description={t('transactions.pageDescription')}
         actions={
           <Button className="gap-2" onClick={handleAddClick}>
             <Plus className="size-4" />
-            Добавить операцию
+            {t('common.addTransaction')}
           </Button>
         }
       />

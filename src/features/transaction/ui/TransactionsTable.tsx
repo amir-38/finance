@@ -1,4 +1,5 @@
 import { MoreHorizontal, Pencil, Receipt, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { CategoryIcon, getCategoryById } from '@/entities/category';
 import type { Transaction } from '@/entities/transaction';
@@ -20,21 +21,22 @@ interface TransactionsTableProps {
 }
 
 function RowActions({ transaction, onEdit, onDelete }: { transaction: Transaction } & Pick<TransactionsTableProps, 'onEdit' | 'onDelete'>) {
+  const { t } = useTranslation();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon-sm" aria-label="Действия">
+        <Button variant="ghost" size="icon-sm" aria-label={t('common.actions')}>
           <MoreHorizontal className="size-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem className="gap-2" onClick={() => onEdit(transaction)}>
           <Pencil className="size-4" />
-          Редактировать
+          {t('common.edit')}
         </DropdownMenuItem>
         <DropdownMenuItem variant="destructive" className="gap-2" onClick={() => onDelete(transaction)}>
           <Trash2 className="size-4" />
-          Удалить
+          {t('common.delete')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -42,12 +44,14 @@ function RowActions({ transaction, onEdit, onDelete }: { transaction: Transactio
 }
 
 export function TransactionsTable({ transactions, onEdit, onDelete }: TransactionsTableProps) {
+  const { t } = useTranslation();
+
   if (transactions.length === 0) {
     return (
       <EmptyState
         icon={Receipt}
-        title="Операции не найдены"
-        description="Измените фильтры или добавьте новую операцию"
+        title={t('transactions.notFoundTitle')}
+        description={t('transactions.notFoundDescription')}
       />
     );
   }
@@ -58,10 +62,10 @@ export function TransactionsTable({ transactions, onEdit, onDelete }: Transactio
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent">
-              <TableHead>Операция</TableHead>
-              <TableHead>Категория</TableHead>
-              <TableHead>Дата</TableHead>
-              <TableHead className="text-right">Сумма</TableHead>
+              <TableHead>{t('transactions.columnOperation')}</TableHead>
+              <TableHead>{t('transactions.columnCategory')}</TableHead>
+              <TableHead>{t('transactions.columnDate')}</TableHead>
+              <TableHead className="text-right">{t('transactions.columnAmount')}</TableHead>
               <TableHead className="w-10" />
             </TableRow>
           </TableHeader>

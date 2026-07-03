@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Target } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { useGoalsQuery, getGoalIcon } from '@/entities/goal';
 import { Button } from '@/shared/components/ui/button';
@@ -10,16 +11,17 @@ import { ROUTES } from '@/shared/config/routes';
 import { formatCurrency, formatDate } from '@/shared/utils/index';
 
 export function FinancialGoals() {
+  const { t } = useTranslation();
   const { data: goals = [] } = useGoalsQuery();
 
   return (
     <Card className="glass-card h-full border-0">
       <CardHeader>
-        <CardTitle>Финансовые цели</CardTitle>
+        <CardTitle>{t('dashboard.financialGoals')}</CardTitle>
         <CardAction>
           <Button asChild variant="ghost" size="sm" className="gap-1 text-muted-foreground">
             <Link to={ROUTES.GOALS}>
-              Все цели
+              {t('dashboard.allGoals')}
               <ArrowRight className="size-3.5" />
             </Link>
           </Button>
@@ -27,7 +29,7 @@ export function FinancialGoals() {
       </CardHeader>
       <CardContent>
         {goals.length === 0 ? (
-          <EmptyState icon={Target} title="Пока нет целей" description="Создайте цель, чтобы копить осознанно" />
+          <EmptyState icon={Target} title={t('dashboard.noGoalsYet')} description={t('dashboard.createGoalDescription')} />
         ) : (
           <div className="space-y-5">
             {goals.map((goal) => {
@@ -45,13 +47,15 @@ export function FinancialGoals() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-foreground">{goal.title}</p>
-                      <p className="text-xs text-muted-foreground">до {formatDate(goal.deadline, 'd MMMM yyyy')}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {t('dashboard.until')} {formatDate(goal.deadline, 'd MMMM yyyy')}
+                      </p>
                     </div>
                     <span className="shrink-0 text-sm font-semibold tabular-nums text-foreground">{percent}%</span>
                   </div>
                   <Progress value={percent} className="h-2" />
                   <p className="text-xs text-muted-foreground">
-                    {formatCurrency(goal.currentAmount)} из {formatCurrency(goal.targetAmount)}
+                    {formatCurrency(goal.currentAmount)} {t('common.of')} {formatCurrency(goal.targetAmount)}
                   </p>
                 </div>
               );

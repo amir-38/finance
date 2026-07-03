@@ -1,16 +1,10 @@
 import { Link } from 'react-router-dom';
 import { ArrowDownCircle, ArrowUpCircle, Target, Wallet } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 import { ROUTES } from '@/shared/config/routes';
 import { cn } from '@/shared/utils/index';
-
-const ACTIONS = [
-  { label: 'Добавить доход', icon: ArrowUpCircle, href: ROUTES.TRANSACTIONS, accent: 'text-success bg-success/10' },
-  { label: 'Добавить расход', icon: ArrowDownCircle, href: ROUTES.TRANSACTIONS, accent: 'text-destructive bg-destructive/10' },
-  { label: 'Новый бюджет', icon: Wallet, href: ROUTES.BUDGET, accent: 'text-primary bg-primary/10' },
-  { label: 'Новая цель', icon: Target, href: ROUTES.GOALS, accent: 'text-warning bg-warning/10' },
-];
 
 const container = {
   hidden: {},
@@ -23,6 +17,15 @@ const item = {
 };
 
 export function QuickActions() {
+  const { t } = useTranslation();
+
+  const actions = [
+    { label: t('dashboard.addIncome'), icon: ArrowUpCircle, href: ROUTES.TRANSACTIONS, accent: 'text-success bg-success/10' },
+    { label: t('dashboard.addExpense'), icon: ArrowDownCircle, href: ROUTES.TRANSACTIONS, accent: 'text-destructive bg-destructive/10' },
+    { label: t('dashboard.newBudget'), icon: Wallet, href: ROUTES.BUDGET, accent: 'text-primary bg-primary/10' },
+    { label: t('dashboard.newGoal'), icon: Target, href: ROUTES.GOALS, accent: 'text-warning bg-warning/10' },
+  ];
+
   return (
     <motion.div
       variants={container}
@@ -30,7 +33,7 @@ export function QuickActions() {
       animate="show"
       className="grid grid-cols-2 gap-3 sm:grid-cols-4"
     >
-      {ACTIONS.map(({ label, icon: Icon, href, accent }) => (
+      {actions.map(({ label, icon: Icon, href, accent }) => (
         <motion.div key={label} variants={item} whileHover={{ y: -2 }}>
           <Link
             to={href}

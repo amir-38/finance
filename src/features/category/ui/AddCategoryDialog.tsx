@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { addCustomCategory, type Category } from '@/entities/category';
 import { Button } from '@/shared/components/ui/button';
@@ -39,10 +40,11 @@ interface AddCategoryDialogProps {
 }
 
 export function AddCategoryDialog({ open, onOpenChange, onCreated }: AddCategoryDialogProps) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<CategoryFormValues>({
-    resolver: zodResolver(categorySchema),
+    resolver: zodResolver(categorySchema()),
     defaultValues: { name: '', color: COLOR_PALETTE[0] },
   });
 
@@ -50,12 +52,12 @@ export function AddCategoryDialog({ open, onOpenChange, onCreated }: AddCategory
     setLoading(true);
     try {
       const category = await addCustomCategory(values);
-      toast.success('Категория добавлена');
+      toast.success(t('category.categoryAdded'));
       onCreated(category);
       form.reset({ name: '', color: COLOR_PALETTE[0] });
       onOpenChange(false);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Не удалось создать категорию');
+      toast.error(error instanceof Error ? error.message : t('category.categoryAddFailed'));
     } finally {
       setLoading(false);
     }
@@ -65,8 +67,8 @@ export function AddCategoryDialog({ open, onOpenChange, onCreated }: AddCategory
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Новая категория</DialogTitle>
-          <DialogDescription>Добавьте свою категорию для доходов или расходов</DialogDescription>
+          <DialogTitle>{t('category.newCategoryTitle')}</DialogTitle>
+          <DialogDescription>{t('category.newCategoryDescription')}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -75,9 +77,9 @@ export function AddCategoryDialog({ open, onOpenChange, onCreated }: AddCategory
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Название</FormLabel>
+                  <FormLabel>{t('category.nameLabel')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Например, Хобби" {...field} />
+                    <Input placeholder={t('category.namePlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -88,7 +90,7 @@ export function AddCategoryDialog({ open, onOpenChange, onCreated }: AddCategory
               name="color"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Цвет</FormLabel>
+                  <FormLabel>{t('category.colorLabel')}</FormLabel>
                   <FormControl>
                     <div className="flex flex-wrap gap-2">
                       {COLOR_PALETTE.map((color) => (
@@ -112,11 +114,11 @@ export function AddCategoryDialog({ open, onOpenChange, onCreated }: AddCategory
             />
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Отмена
+                {t('common.cancel')}
               </Button>
               <Button type="submit" disabled={loading} className="gap-2">
                 {loading && <Loader2 className="size-4 animate-spin" />}
-                Создать
+                {t('common.create')}
               </Button>
             </DialogFooter>
           </form>

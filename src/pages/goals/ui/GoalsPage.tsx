@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { MoreHorizontal, PiggyBank, Pencil, Plus, Trash2, Wallet } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { getGoalIcon, useGoalsQuery, type Goal } from '@/entities/goal';
 import { AddFundsDialog, DeleteGoalDialog, GoalFormDialog } from '@/features/goal';
@@ -17,6 +18,7 @@ import { Progress } from '@/shared/components/ui/progress';
 import { formatCurrency, formatDate, formatRelativeDate } from '@/shared/utils/index';
 
 export function GoalsPage() {
+  const { t } = useTranslation();
   const { data: goals = [] } = useGoalsQuery();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState<Goal | undefined>(undefined);
@@ -36,12 +38,12 @@ export function GoalsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Цели"
-        description="Копите осознанно — следите за прогрессом по каждой цели"
+        title={t('goals.pageTitle')}
+        description={t('goals.pageDescription')}
         actions={
           <Button className="gap-2" onClick={handleCreate}>
             <Plus className="size-4" />
-            Новая цель
+            {t('goals.newGoal')}
           </Button>
         }
       />
@@ -49,12 +51,12 @@ export function GoalsPage() {
       {goals.length === 0 ? (
         <EmptyState
           icon={Wallet}
-          title="Пока нет целей"
-          description="Создайте первую цель, чтобы копить осознанно"
+          title={t('goals.noGoalsTitle')}
+          description={t('goals.noGoalsDescription')}
           action={
             <Button onClick={handleCreate} className="gap-2">
               <Plus className="size-4" />
-              Новая цель
+              {t('goals.newGoal')}
             </Button>
           }
         />
@@ -78,28 +80,28 @@ export function GoalsPage() {
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-medium text-foreground">{goal.title}</p>
                       <p className="text-xs text-muted-foreground">
-                        {isCompleted ? 'Цель достигнута' : `до ${formatDate(goal.deadline, 'd MMMM yyyy')}`}
+                        {isCompleted ? t('goals.goalAchieved') : `${t('dashboard.until')} ${formatDate(goal.deadline, 'd MMMM yyyy')}`}
                         {!isCompleted && ` · ${formatRelativeDate(goal.deadline)}`}
                       </p>
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon-sm" aria-label="Действия">
+                        <Button variant="ghost" size="icon-sm" aria-label={t('common.actions')}>
                           <MoreHorizontal className="size-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem className="gap-2" onClick={() => setFundingGoal(goal)}>
                           <PiggyBank className="size-4" />
-                          Пополнить
+                          {t('goals.contribute')}
                         </DropdownMenuItem>
                         <DropdownMenuItem className="gap-2" onClick={() => handleEdit(goal)}>
                           <Pencil className="size-4" />
-                          Редактировать
+                          {t('common.edit')}
                         </DropdownMenuItem>
                         <DropdownMenuItem variant="destructive" className="gap-2" onClick={() => setDeletingGoal(goal)}>
                           <Trash2 className="size-4" />
-                          Удалить
+                          {t('common.delete')}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -109,7 +111,7 @@ export function GoalsPage() {
                     <div className="flex items-center justify-between">
                       <span className="text-sm font-semibold tabular-nums text-foreground">{percent}%</span>
                       <span className="text-xs text-muted-foreground">
-                        {formatCurrency(goal.currentAmount)} из {formatCurrency(goal.targetAmount)}
+                        {formatCurrency(goal.currentAmount)} {t('common.of')} {formatCurrency(goal.targetAmount)}
                       </span>
                     </div>
                     <Progress value={percent} className="h-2" />
@@ -117,7 +119,7 @@ export function GoalsPage() {
 
                   <Button variant="outline" size="sm" className="w-full gap-1.5" onClick={() => setFundingGoal(goal)}>
                     <PiggyBank className="size-3.5" />
-                    Пополнить
+                    {t('goals.contribute')}
                   </Button>
                 </CardContent>
               </Card>

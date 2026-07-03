@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { CategoryIcon, type Category } from '@/entities/category';
 import {
@@ -18,6 +19,8 @@ interface CategoryPickerProps {
 }
 
 export function CategoryPicker({ categories, value, onChange, onRequestAddCategory }: CategoryPickerProps) {
+  const { t } = useTranslation();
+
   return (
     <Select
       value={value}
@@ -30,7 +33,7 @@ export function CategoryPicker({ categories, value, onChange, onRequestAddCatego
       }}
     >
       <SelectTrigger className="w-full">
-        <SelectValue placeholder="Выберите категорию" />
+        <SelectValue placeholder={t('common.selectCategory')} />
       </SelectTrigger>
       <SelectContent>
         {categories.map((category) => (
@@ -45,7 +48,7 @@ export function CategoryPicker({ categories, value, onChange, onRequestAddCatego
         <SelectItem value="__add__">
           <span className="flex items-center gap-2 text-primary">
             <Plus className="size-4" />
-            Добавить категорию
+            {t('transactions.addCategoryOption')}
           </span>
         </SelectItem>
       </SelectContent>

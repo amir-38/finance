@@ -1,4 +1,5 @@
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { useDeleteTransactionMutation, type Transaction } from '@/entities/transaction';
 import { ConfirmDialog } from '@/shared/components/ConfirmDialog';
@@ -9,16 +10,17 @@ interface DeleteTransactionDialogProps {
 }
 
 export function DeleteTransactionDialog({ transaction, onOpenChange }: DeleteTransactionDialogProps) {
+  const { t } = useTranslation();
   const deleteMutation = useDeleteTransactionMutation();
 
   async function handleConfirm() {
     if (!transaction) return;
     try {
       await deleteMutation.mutateAsync(transaction.id);
-      toast.success('Операция удалена');
+      toast.success(t('transactions.transactionDeleted'));
       onOpenChange(false);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Не удалось удалить операцию');
+      toast.error(error instanceof Error ? error.message : t('transactions.transactionDeleteFailed'));
     }
   }
 
@@ -26,9 +28,9 @@ export function DeleteTransactionDialog({ transaction, onOpenChange }: DeleteTra
     <ConfirmDialog
       open={Boolean(transaction)}
       onOpenChange={onOpenChange}
-      title="Удалить операцию?"
-      description={transaction ? `«${transaction.title}» будет удалена без возможности восстановления.` : undefined}
-      confirmLabel="Удалить"
+      title={t('transactions.deleteTransactionTitle')}
+      description={transaction ? t('transactions.deleteTransactionDescription', { title: transaction.title }) : undefined}
+      confirmLabel={t('common.delete')}
       variant="destructive"
       loading={deleteMutation.isPending}
       onConfirm={handleConfirm}

@@ -1,5 +1,6 @@
 import { Laptop, Moon, Sun } from "lucide-react"
 import { useTheme } from "next-themes"
+import { useTranslation } from "react-i18next"
 
 import {
   DropdownMenu,
@@ -9,19 +10,20 @@ import {
 } from "@/shared/components/ui/dropdown-menu"
 import { Button } from "@/shared/components/ui/button"
 
-const options = [
-  { value: "light", label: "Светлая", icon: Sun },
-  { value: "dark", label: "Тёмная", icon: Moon },
-  { value: "system", label: "Системная", icon: Laptop },
-] as const
-
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
+  const { t } = useTranslation()
+
+  const options = [
+    { value: "light", label: t('theme.light'), icon: Sun },
+    { value: "dark", label: t('theme.dark'), icon: Moon },
+    { value: "system", label: t('theme.system'), icon: Laptop },
+  ] as const
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Переключить тему">
+        <Button variant="ghost" size="icon" aria-label={t('common.toggleTheme')}>
           <Sun className="size-4.5 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
           <Moon className="absolute size-4.5 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
         </Button>

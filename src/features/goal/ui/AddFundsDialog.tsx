@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { useUpdateGoalMutation, type Goal } from '@/entities/goal';
 import { Button } from '@/shared/components/ui/button';
@@ -25,10 +26,11 @@ interface AddFundsDialogProps {
 }
 
 export function AddFundsDialog({ goal, onOpenChange }: AddFundsDialogProps) {
+  const { t } = useTranslation();
   const updateMutation = useUpdateGoalMutation();
 
   const form = useForm<ContributeFormValues>({
-    resolver: zodResolver(contributeSchema),
+    resolver: zodResolver(contributeSchema()),
     defaultValues: { amount: 0 },
   });
 
@@ -50,10 +52,10 @@ export function AddFundsDialog({ goal, onOpenChange }: AddFundsDialogProps) {
           currentAmount: goal.currentAmount + values.amount,
         },
       });
-      toast.success('Средства добавлены');
+      toast.success(t('goals.fundsAdded'));
       onOpenChange(false);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Не удалось пополнить цель');
+      toast.error(error instanceof Error ? error.message : t('goals.fundsAddFailed'));
     }
   }
 
@@ -61,9 +63,13 @@ export function AddFundsDialog({ goal, onOpenChange }: AddFundsDialogProps) {
     <Dialog open={Boolean(goal)} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>Пополнить цель</DialogTitle>
+          <DialogTitle>{t('goals.addFundsTitle')}</DialogTitle>
           <DialogDescription>
-            {goal && `Сейчас накоплено ${formatCurrency(goal.currentAmount)} из ${formatCurrency(goal.targetAmount)}`}
+            {goal &&
+              t('goals.addFundsDescription', {
+                current: formatCurrency(goal.currentAmount),
+                target: formatCurrency(goal.targetAmount),
+              })}
           </DialogDescription>
         </DialogHeader>
 
@@ -74,7 +80,7 @@ export function AddFundsDialog({ goal, onOpenChange }: AddFundsDialogProps) {
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Сумма пополнения, ₼</FormLabel>
+                  <FormLabel>{t('goals.amountLabel')}</FormLabel>
                   <FormControl>
                     <Input type="number" step="0.01" min="0" placeholder="0" autoFocus {...field} />
                   </FormControl>
@@ -84,11 +90,11 @@ export function AddFundsDialog({ goal, onOpenChange }: AddFundsDialogProps) {
             />
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Отмена
+                {t('common.cancel')}
               </Button>
               <Button type="submit" disabled={updateMutation.isPending} className="gap-2">
                 {updateMutation.isPending && <Loader2 className="size-4 animate-spin" />}
-                Пополнить
+                {t('goals.contribute')}
               </Button>
             </DialogFooter>
           </form>

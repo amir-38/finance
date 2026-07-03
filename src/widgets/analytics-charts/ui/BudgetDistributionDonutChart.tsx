@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Cell, Legend, Pie, PieChart, Tooltip } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 import { useBudgetUsage } from '@/features/budget';
 import { formatCurrency } from '@/shared/utils/index';
@@ -7,6 +8,7 @@ import { ChartCard } from './ChartCard';
 import { ChartTooltipContent } from './ChartTooltipContent';
 
 export function BudgetDistributionDonutChart() {
+  const { t } = useTranslation();
   const budgets = useBudgetUsage();
 
   const data = useMemo(
@@ -18,7 +20,7 @@ export function BudgetDistributionDonutChart() {
   );
 
   return (
-    <ChartCard title="Распределение бюджета" description="Лимиты по категориям на текущий месяц">
+    <ChartCard title={t('analytics.budgetDistributionTitle')} description={t('analytics.budgetDistributionDescription')}>
       <PieChart>
         <Tooltip content={<ChartTooltipContent valueFormatter={formatCurrency} />} />
         <Legend wrapperStyle={{ fontSize: 12, color: 'var(--muted-foreground)' }} iconType="circle" iconSize={8} />

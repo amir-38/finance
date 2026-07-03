@@ -1,6 +1,7 @@
 import { LogIn, LogOut, Settings, User } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
 import {
@@ -28,18 +29,19 @@ function getInitials(name: string | null, email: string): string {
 
 export function UserMenu() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const displayName = user?.fullName ?? user?.email ?? 'Гость';
-  const email = user?.email ?? 'Вход не выполнен';
-  const initials = user ? getInitials(user.fullName, user.email) : 'ГС';
+  const displayName = user?.fullName ?? user?.email ?? t('common.guest');
+  const email = user?.email ?? t('common.notSignedIn');
+  const initials = user ? getInitials(user.fullName, user.email) : getInitials(t('common.guest'), t('common.guest'));
 
   async function handleSignOut() {
     try {
       await signOut();
-      toast.success('Вы вышли из аккаунта');
+      toast.success(t('auth.signedOut'));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Не удалось выйти');
+      toast.error(error instanceof Error ? error.message : t('auth.signOutFailed'));
     } finally {
       navigate(ROUTES.AUTH.LOGIN);
     }
@@ -63,26 +65,26 @@ export function UserMenu() {
         <DropdownMenuItem asChild>
           <Link to={ROUTES.SETTINGS} className="gap-2">
             <User className="size-4" />
-            Профиль
+            {t('auth.profile')}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link to={ROUTES.SETTINGS} className="gap-2">
             <Settings className="size-4" />
-            Настройки
+            {t('nav.settings')}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         {user ? (
           <DropdownMenuItem variant="destructive" className="gap-2" onClick={handleSignOut}>
             <LogOut className="size-4" />
-            Выйти
+            {t('auth.logout')}
           </DropdownMenuItem>
         ) : (
           <DropdownMenuItem asChild>
             <Link to={ROUTES.AUTH.LOGIN} className="gap-2">
               <LogIn className="size-4" />
-              Войти
+              {t('auth.login')}
             </Link>
           </DropdownMenuItem>
         )}

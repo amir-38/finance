@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 import {
   BalanceHistoryAreaChart,
   BudgetDistributionDonutChart,
@@ -22,12 +24,14 @@ function SectionLabel({ children }: { children: string }) {
 }
 
 export function AnalyticsPage() {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-8">
-      <PageHeader title="Аналитика" description="Полная картина ваших финансов в графиках" />
+      <PageHeader title={t('analytics.pageTitle')} description={t('analytics.pageDescription')} />
 
       <div className="space-y-4">
-        <SectionLabel>Обзор</SectionLabel>
+        <SectionLabel>{t('analytics.sectionOverview')}</SectionLabel>
         <IncomeExpenseLineChart />
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <BalanceHistoryAreaChart />
@@ -36,7 +40,7 @@ export function AnalyticsPage() {
       </div>
 
       <div className="space-y-4">
-        <SectionLabel>Категории и источники</SectionLabel>
+        <SectionLabel>{t('analytics.sectionCategories')}</SectionLabel>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
           <ExpensesByCategoryPieChart />
           <IncomeSourcesPieChart />
@@ -50,7 +54,7 @@ export function AnalyticsPage() {
       </div>
 
       <div className="space-y-4">
-        <SectionLabel>Тренды</SectionLabel>
+        <SectionLabel>{t('analytics.sectionTrends')}</SectionLabel>
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <MonthlySpendingBarChart />
           <WeeklyExpensesBarChart />
@@ -62,7 +66,7 @@ export function AnalyticsPage() {
       </div>
 
       <div className="space-y-4">
-        <SectionLabel>История</SectionLabel>
+        <SectionLabel>{t('analytics.sectionHistory')}</SectionLabel>
         <TransactionsCalendar />
         <TransactionsTimeline />
       </div>

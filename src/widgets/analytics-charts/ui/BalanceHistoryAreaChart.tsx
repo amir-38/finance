@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 import { useTransactionsQuery, getBalanceHistory } from '@/entities/transaction';
 import { formatCompactCurrency } from '@/shared/utils/index';
@@ -7,11 +8,14 @@ import { ChartCard } from './ChartCard';
 import { ChartTooltipContent } from './ChartTooltipContent';
 
 export function BalanceHistoryAreaChart() {
+  const { t, i18n } = useTranslation();
   const { data: transactions = [] } = useTransactionsQuery();
-  const data = useMemo(() => getBalanceHistory(transactions, 60), [transactions]);
+  const data = useMemo(() => getBalanceHistory(transactions, 60),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [transactions, i18n.language]);
 
   return (
-    <ChartCard title="История баланса" description="Изменение общего баланса за 60 дней">
+    <ChartCard title={t('analytics.balanceHistoryTitle')} description={t('analytics.balanceHistoryDescription')}>
       <AreaChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
         <defs>
           <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
@@ -38,7 +42,7 @@ export function BalanceHistoryAreaChart() {
         <Area
           type="monotone"
           dataKey="balance"
-          name="Баланс"
+          name={t('analytics.balanceSeriesName')}
           stroke="var(--primary)"
           strokeWidth={2.5}
           fill="url(#balanceGradient)"

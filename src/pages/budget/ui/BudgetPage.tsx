@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { AlertTriangle, MoreHorizontal, Pencil, Plus, Trash2, Wallet } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { BudgetFormDialog, DeleteBudgetDialog, useBudgetUsage, type BudgetUsage } from '@/features/budget';
 import { getAllCategories, type Category } from '@/entities/category';
@@ -31,6 +32,7 @@ const percentClass: Record<BudgetUsage['status'], string> = {
 };
 
 export function BudgetPage() {
+  const { t } = useTranslation();
   const budgets = useBudgetUsage();
   const [categories] = useState<Category[]>(() => getAllCategories());
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -52,12 +54,12 @@ export function BudgetPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Бюджет"
-        description="Лимиты расходов по категориям и на месяц"
+        title={t('budget.pageTitle')}
+        description={t('budget.pageDescription')}
         actions={
           <Button className="gap-2" onClick={handleCreate}>
             <Plus className="size-4" />
-            Создать бюджет
+            {t('budget.createBudget')}
           </Button>
         }
       />
@@ -65,12 +67,12 @@ export function BudgetPage() {
       {budgets.length === 0 ? (
         <EmptyState
           icon={Wallet}
-          title="Бюджеты не созданы"
-          description="Задайте лимит, чтобы контролировать расходы по категориям или на месяц в целом"
+          title={t('budget.noBudgetsTitle')}
+          description={t('budget.noBudgetsDescription')}
           action={
             <Button onClick={handleCreate} className="gap-2">
               <Plus className="size-4" />
-              Создать бюджет
+              {t('budget.createBudget')}
             </Button>
           }
         />
@@ -84,23 +86,23 @@ export function BudgetPage() {
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-medium text-foreground">{budget.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {formatCurrency(budget.spent)} из {formatCurrency(budget.limit)}
+                      {formatCurrency(budget.spent)} {t('common.of')} {formatCurrency(budget.limit)}
                     </p>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon-sm" aria-label="Действия">
+                      <Button variant="ghost" size="icon-sm" aria-label={t('common.actions')}>
                         <MoreHorizontal className="size-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem className="gap-2" onClick={() => handleEdit(budget)}>
                         <Pencil className="size-4" />
-                        Редактировать
+                        {t('common.edit')}
                       </DropdownMenuItem>
                       <DropdownMenuItem variant="destructive" className="gap-2" onClick={() => setDeletingBudget(budget)}>
                         <Trash2 className="size-4" />
-                        Удалить
+                        {t('common.delete')}
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -113,7 +115,7 @@ export function BudgetPage() {
                   {budget.status !== 'ok' && (
                     <span className={cn('flex items-center gap-1', percentClass[budget.status])}>
                       <AlertTriangle className="size-3.5" />
-                      {budget.status === 'over' ? 'Лимит превышен' : 'Близко к лимиту'}
+                      {budget.status === 'over' ? t('budget.limitExceeded') : t('budget.closeToLimit')}
                     </span>
                   )}
                 </div>

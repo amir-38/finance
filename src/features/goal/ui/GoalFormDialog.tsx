@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { GOAL_ICON_MAP, getGoalIcon, useCreateGoalMutation, useUpdateGoalMutation, type Goal } from '@/entities/goal';
 import { Button } from '@/shared/components/ui/button';
@@ -50,13 +51,14 @@ function toDefaultValues(goal?: Goal): GoalFormValues {
 }
 
 export function GoalFormDialog({ open, onOpenChange, goal }: GoalFormDialogProps) {
+  const { t } = useTranslation();
   const isEdit = Boolean(goal);
   const createMutation = useCreateGoalMutation();
   const updateMutation = useUpdateGoalMutation();
   const loading = createMutation.isPending || updateMutation.isPending;
 
   const form = useForm<GoalFormValues>({
-    resolver: zodResolver(goalSchema),
+    resolver: zodResolver(goalSchema()),
     defaultValues: toDefaultValues(goal),
   });
 
@@ -77,14 +79,14 @@ export function GoalFormDialog({ open, onOpenChange, goal }: GoalFormDialogProps
     try {
       if (isEdit && goal) {
         await updateMutation.mutateAsync({ id: goal.id, input });
-        toast.success('Цель обновлена');
+        toast.success(t('goals.goalUpdated'));
       } else {
         await createMutation.mutateAsync(input);
-        toast.success('Цель создана');
+        toast.success(t('goals.goalCreated'));
       }
       onOpenChange(false);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Не удалось сохранить цель');
+      toast.error(error instanceof Error ? error.message : t('goals.goalSaveFailed'));
     }
   }
 
@@ -92,9 +94,9 @@ export function GoalFormDialog({ open, onOpenChange, goal }: GoalFormDialogProps
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{isEdit ? 'Редактировать цель' : 'Новая цель'}</DialogTitle>
+          <DialogTitle>{isEdit ? t('goals.editGoalTitle') : t('goals.newGoalTitle')}</DialogTitle>
           <DialogDescription>
-            {isEdit ? 'Измените параметры цели' : 'Задайте сумму и срок — мы будем отслеживать прогресс'}
+            {isEdit ? t('goals.editGoalDescription') : t('goals.createGoalDialogDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -105,9 +107,9 @@ export function GoalFormDialog({ open, onOpenChange, goal }: GoalFormDialogProps
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Название</FormLabel>
+                  <FormLabel>{t('goals.titleLabel')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Например, Путешествие в Японию" {...field} />
+                    <Input placeholder={t('goals.titlePlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -120,7 +122,7 @@ export function GoalFormDialog({ open, onOpenChange, goal }: GoalFormDialogProps
                 name="targetAmount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Цель, ₼</FormLabel>
+                    <FormLabel>{t('goals.targetLabel')}</FormLabel>
                     <FormControl>
                       <Input type="number" step="0.01" min="0" placeholder="0" {...field} />
                     </FormControl>
@@ -133,7 +135,7 @@ export function GoalFormDialog({ open, onOpenChange, goal }: GoalFormDialogProps
                 name="currentAmount"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Уже накоплено, ₼</FormLabel>
+                    <FormLabel>{t('goals.currentLabel')}</FormLabel>
                     <FormControl>
                       <Input type="number" step="0.01" min="0" placeholder="0" {...field} />
                     </FormControl>
@@ -148,7 +150,7 @@ export function GoalFormDialog({ open, onOpenChange, goal }: GoalFormDialogProps
               name="deadline"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Срок</FormLabel>
+                  <FormLabel>{t('goals.deadlineLabel')}</FormLabel>
                   <FormControl>
                     <DatePicker value={field.value} onChange={field.onChange} disabled={(date) => date < new Date()} />
                   </FormControl>
@@ -162,7 +164,7 @@ export function GoalFormDialog({ open, onOpenChange, goal }: GoalFormDialogProps
               name="icon"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Иконка</FormLabel>
+                  <FormLabel>{t('goals.iconLabel')}</FormLabel>
                   <FormControl>
                     <div className="flex flex-wrap gap-2">
                       {Object.keys(GOAL_ICON_MAP).map((iconKey) => {
@@ -194,7 +196,7 @@ export function GoalFormDialog({ open, onOpenChange, goal }: GoalFormDialogProps
               name="color"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Цвет</FormLabel>
+                  <FormLabel>{t('goals.colorLabel')}</FormLabel>
                   <FormControl>
                     <div className="flex flex-wrap gap-2">
                       {COLOR_PALETTE.map((color) => (
@@ -219,11 +221,11 @@ export function GoalFormDialog({ open, onOpenChange, goal }: GoalFormDialogProps
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-                Отмена
+                {t('common.cancel')}
               </Button>
               <Button type="submit" disabled={loading} className="gap-2">
                 {loading && <Loader2 className="size-4 animate-spin" />}
-                {isEdit ? 'Сохранить' : 'Создать'}
+                {isEdit ? t('common.save') : t('common.create')}
               </Button>
             </DialogFooter>
           </form>

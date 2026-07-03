@@ -1,4 +1,5 @@
 import { ArrowDownWideNarrow, ArrowUpWideNarrow, Search, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import type { Category } from '@/entities/category';
 import { Button } from '@/shared/components/ui/button';
@@ -14,14 +15,15 @@ interface TransactionFiltersProps {
   onReset: () => void;
 }
 
-const SORT_OPTIONS = [
-  { value: 'date', label: 'По дате' },
-  { value: 'amount', label: 'По сумме' },
-] as const;
-
 export function TransactionFilters({ categories, filters, onChange, onReset }: TransactionFiltersProps) {
+  const { t } = useTranslation();
   const hasActiveFilters =
     filters.search || filters.type !== 'all' || filters.categoryId !== 'all' || filters.dateFrom || filters.dateTo;
+
+  const SORT_OPTIONS = [
+    { value: 'date', label: t('transactions.sortByDate') },
+    { value: 'amount', label: t('transactions.sortByAmount') },
+  ] as const;
 
   return (
     <div className="flex flex-col gap-3">
@@ -30,7 +32,7 @@ export function TransactionFilters({ categories, filters, onChange, onReset }: T
         <Input
           value={filters.search}
           onChange={(e) => onChange({ search: e.target.value })}
-          placeholder="Поиск по названию, описанию, комментарию…"
+          placeholder={t('transactions.searchPlaceholder')}
           className="pl-9"
         />
       </div>
@@ -39,16 +41,16 @@ export function TransactionFilters({ categories, filters, onChange, onReset }: T
         <Select value={filters.type} onValueChange={(value) => onChange({ type: value as TransactionFiltersState['type'] })}>
           <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Все типы</SelectItem>
-            <SelectItem value="income">Доходы</SelectItem>
-            <SelectItem value="expense">Расходы</SelectItem>
+            <SelectItem value="all">{t('transactions.allTypes')}</SelectItem>
+            <SelectItem value="income">{t('transactions.income')}</SelectItem>
+            <SelectItem value="expense">{t('transactions.expense')}</SelectItem>
           </SelectContent>
         </Select>
 
         <Select value={filters.categoryId} onValueChange={(value) => onChange({ categoryId: value })}>
-          <SelectTrigger className="w-44"><SelectValue placeholder="Все категории" /></SelectTrigger>
+          <SelectTrigger className="w-44"><SelectValue placeholder={t('transactions.allCategories')} /></SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Все категории</SelectItem>
+            <SelectItem value="all">{t('transactions.allCategories')}</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category.id} value={category.id}>
                 {category.name}
@@ -60,13 +62,13 @@ export function TransactionFilters({ categories, filters, onChange, onReset }: T
         <DatePicker
           value={filters.dateFrom}
           onChange={(date) => onChange({ dateFrom: date })}
-          placeholder="Дата от"
+          placeholder={t('transactions.dateFrom')}
           className="w-36"
         />
         <DatePicker
           value={filters.dateTo}
           onChange={(date) => onChange({ dateTo: date })}
-          placeholder="Дата до"
+          placeholder={t('transactions.dateTo')}
           className="w-36"
         />
 
@@ -85,7 +87,7 @@ export function TransactionFilters({ categories, filters, onChange, onReset }: T
           variant="outline"
           size="icon"
           onClick={() => onChange({ sortDir: filters.sortDir === 'asc' ? 'desc' : 'asc' })}
-          aria-label="Направление сортировки"
+          aria-label={t('transactions.sortDirection')}
         >
           {filters.sortDir === 'asc' ? <ArrowUpWideNarrow className="size-4" /> : <ArrowDownWideNarrow className="size-4" />}
         </Button>
@@ -93,7 +95,7 @@ export function TransactionFilters({ categories, filters, onChange, onReset }: T
         {hasActiveFilters && (
           <Button variant="ghost" onClick={onReset} className="gap-1.5 text-muted-foreground">
             <X className="size-3.5" />
-            Сбросить
+            {t('transactions.reset')}
           </Button>
         )}
       </div>

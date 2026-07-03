@@ -11,8 +11,9 @@ import {
   startOfWeek,
   subMonths,
 } from 'date-fns';
-import { ru } from 'date-fns/locale';
+import { az, ru } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 import { useTransactionsQuery } from '@/entities/transaction';
 import { Button } from '@/shared/components/ui/button';
@@ -24,7 +25,11 @@ import {
 } from '@/shared/components/ui/tooltip';
 import { cn, formatCurrency } from '@/shared/utils/index';
 
-const WEEKDAYS = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
+const DATE_LOCALES = { az, ru };
+
+function getDateLocale(language: string) {
+  return DATE_LOCALES[language as keyof typeof DATE_LOCALES] ?? az;
+}
 
 function intensityClass(ratio: number): string {
   if (ratio <= 0) return 'bg-muted/40';
@@ -35,8 +40,20 @@ function intensityClass(ratio: number): string {
 }
 
 export function TransactionsCalendar() {
+  const { t, i18n } = useTranslation();
   const [month, setMonth] = useState(() => new Date());
   const { data: transactions = [] } = useTransactionsQuery();
+  const dateLocale = getDateLocale(i18n.language);
+
+  const WEEKDAYS = [
+    t('dashboard.weekdayMon'),
+    t('dashboard.weekdayTue'),
+    t('dashboard.weekdayWed'),
+    t('dashboard.weekdayThu'),
+    t('dashboard.weekdayFri'),
+    t('dashboard.weekdaySat'),
+    t('dashboard.weekdaySun'),
+  ];
 
   const { days, maxTotal, totalsByDay } = useMemo(() => {
     const start = startOfWeek(startOfMonth(month), { weekStartsOn: 1 });
@@ -58,15 +75,15 @@ export function TransactionsCalendar() {
   return (
     <Card className="glass-card border-0">
       <CardHeader>
-        <CardTitle>Календарь операций</CardTitle>
+        <CardTitle>{t('dashboard.calendarTitle')}</CardTitle>
         <CardAction className="flex items-center gap-1">
-          <Button variant="ghost" size="icon-sm" onClick={() => setMonth((m) => subMonths(m, 1))} aria-label="Предыдущий месяц">
+          <Button variant="ghost" size="icon-sm" onClick={() => setMonth((m) => subMonths(m, 1))} aria-label={t('dashboard.prevMonth')}>
             <ChevronLeft className="size-4" />
           </Button>
           <span className="min-w-28 text-center text-sm font-medium capitalize text-foreground">
-            {format(month, 'LLLL yyyy', { locale: ru })}
+            {format(month, 'LLLL yyyy', { locale: dateLocale })}
           </span>
-          <Button variant="ghost" size="icon-sm" onClick={() => setMonth((m) => addMonths(m, 1))} aria-label="Следующий месяц">
+          <Button variant="ghost" size="icon-sm" onClick={() => setMonth((m) => addMonths(m, 1))} aria-label={t('dashboard.nextMonth')}>
             <ChevronRight className="size-4" />
           </Button>
         </CardAction>
@@ -101,7 +118,7 @@ export function TransactionsCalendar() {
                 </TooltipTrigger>
                 {inMonth && (
                   <TooltipContent>
-                    {format(day, 'd MMMM', { locale: ru })}: {total > 0 ? formatCurrency(total) : 'нет расходов'}
+                    {format(day, 'd MMMM', { locale: dateLocale })}: {total > 0 ? formatCurrency(total) : t('dashboard.noExpenses')}
                   </TooltipContent>
                 )}
               </Tooltip>

@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/shared/components/ui/button';
 import { PasswordInput } from '@/shared/components/ui/password-input';
@@ -11,10 +12,11 @@ import { updatePassword } from '../api/auth';
 import { newPasswordSchema, type NewPasswordFormValues } from '../model/schemas';
 
 export function ChangePasswordForm() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const form = useForm<NewPasswordFormValues>({
-    resolver: zodResolver(newPasswordSchema),
+    resolver: zodResolver(newPasswordSchema()),
     defaultValues: { password: '', confirmPassword: '' },
   });
 
@@ -22,10 +24,10 @@ export function ChangePasswordForm() {
     setLoading(true);
     try {
       await updatePassword(values.password);
-      toast.success('Пароль обновлён');
+      toast.success(t('auth.passwordUpdated'));
       form.reset();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Не удалось обновить пароль');
+      toast.error(error instanceof Error ? error.message : t('auth.passwordUpdateFailed'));
     } finally {
       setLoading(false);
     }
@@ -39,7 +41,7 @@ export function ChangePasswordForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Новый пароль</FormLabel>
+              <FormLabel>{t('auth.newPassword')}</FormLabel>
               <FormControl>
                 <PasswordInput autoComplete="new-password" {...field} />
               </FormControl>
@@ -52,7 +54,7 @@ export function ChangePasswordForm() {
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Повторите пароль</FormLabel>
+              <FormLabel>{t('auth.confirmPassword')}</FormLabel>
               <FormControl>
                 <PasswordInput autoComplete="new-password" {...field} />
               </FormControl>
@@ -62,7 +64,7 @@ export function ChangePasswordForm() {
         />
         <Button type="submit" className="gap-2" disabled={loading}>
           {loading && <Loader2 className="size-4 animate-spin" />}
-          Обновить пароль
+          {t('settings.updatePassword')}
         </Button>
       </form>
     </Form>

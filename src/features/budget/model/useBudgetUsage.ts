@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 import { getCategoryById } from '@/entities/category';
 import { useBudgetsQuery } from '@/entities/budget';
@@ -19,6 +20,7 @@ export interface BudgetUsage {
 }
 
 export function useBudgetUsage(): BudgetUsage[] {
+  const { t, i18n } = useTranslation();
   const { data: transactions = [] } = useTransactionsQuery();
   const { data: budgets = [] } = useBudgetsQuery();
 
@@ -45,7 +47,7 @@ export function useBudgetUsage(): BudgetUsage[] {
           id: budget.id,
           categoryId: budget.categoryId,
           month: budget.month,
-          name: category?.name ?? 'Общий бюджет',
+          name: category?.name ?? t('budget.overallBudget'),
           icon: category?.icon ?? 'wallet',
           color: category?.color ?? '#2563EB',
           limit: budget.limit,
@@ -54,5 +56,6 @@ export function useBudgetUsage(): BudgetUsage[] {
           status,
         };
       });
-  }, [transactions, budgets]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transactions, budgets, i18n.language]);
 }

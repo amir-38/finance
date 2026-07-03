@@ -1,16 +1,19 @@
 import { Outlet } from "react-router-dom"
 import { motion } from "framer-motion"
 import { BarChart3, ShieldCheck, Sparkles } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 import { Logo } from "@/shared/components/Logo"
 
-const highlights = [
-  { icon: BarChart3, text: "Наглядная аналитика доходов и расходов" },
-  { icon: ShieldCheck, text: "Безопасное хранение данных в Supabase" },
-  { icon: Sparkles, text: "Цели, бюджеты и напоминания в одном месте" },
-]
-
 export function AuthLayout() {
+  const { t } = useTranslation()
+
+  const highlights = [
+    { icon: BarChart3, text: t('authLayout.highlight1') },
+    { icon: ShieldCheck, text: t('authLayout.highlight2') },
+    { icon: Sparkles, text: t('authLayout.highlight3') },
+  ]
+
   return (
     <div className="flex min-h-screen bg-background">
       <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden p-12 lg:flex">
@@ -26,7 +29,7 @@ export function AuthLayout() {
           className="relative space-y-8"
         >
           <h1 className="max-w-md text-3xl font-bold leading-tight text-white">
-            Полный контроль над личными финансами
+            {t('authLayout.heroTitle')}
           </h1>
           <ul className="space-y-4">
             {highlights.map(({ icon: Icon, text }) => (
